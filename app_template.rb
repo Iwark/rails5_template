@@ -49,6 +49,8 @@ gem 'whenever', require: false
 gem 'newrelic_rpm'
 gem 'kaminari'
 gem 'nokogiri'
+gem 'unicorn'
+
 group :development, :test do
   gem 'byebug', platform: :mri
 
