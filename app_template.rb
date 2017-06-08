@@ -272,13 +272,15 @@ set :repo_url, 'git@github.com:Iwark/#{@app_name}.git'
 set :rbenv_ruby, '2.4.0'
 # Default value for :linked_files is []
 set :linked_files, %w{config/database.yml config/secrets.yml}
-set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/uploads}
+set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/uploads}
 set :default_stage, "production"
 set :whenever_identifier, ->{ "\#{fetch(:application)}_\#{fetch(:stage)}" }
 set :bundle_env_variables, { 'NOKOGIRI_USE_SYSTEM_LIBRARIES' => 1 }
 # set :linked_dirs, (fetch(:linked_dirs) + ['tmp/pids'])
 set :unicorn_rack_env, "production"
 set :unicorn_config_path, 'config/unicorn.rb'
+set :bundle_binstubs, nil
+
 namespace :deploy do
   desc 'Restart application'
   task :restart do
