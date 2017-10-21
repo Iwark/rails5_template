@@ -28,7 +28,7 @@ end
 run 'bundle install --path vendor/bundle --jobs=4'
 
 # create db
-run 'bundle exec rake db:create'
+run 'bundle exec rails db:create'
 
 # annotate gem
 run 'rails g annotate:install'
