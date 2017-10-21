@@ -1,119 +1,27 @@
+def get_remote(src, dest = nil)
+  dest ||= src
+  repo = 'https://raw.github.com/Iwark/rails5_template/master/files/'
+  remote_file = repo + src
+  remove_file dest
+  get(remote_file, dest)
+end
+
 # アプリ名の取得
 @app_name = app_name
 
-# .gitignore
-insert_into_file '.gitignore',%(
+@repo = ask("Type github repository name ex: Iwark/rails5_template")
 
-vendor/bundle
-doc/
-*.swp
-*~
-.project
-.DS_Store
-.idea
-.secret
-config/database.yml
-config/secrets.yml
-), after: '.byebug_history'
+# gitignore
+get_remote('gitignore', '.gitignore')
 
 # Gemfile
-run 'rm -f Gemfile'
-file 'Gemfile', <<-CODE
-source 'https://rubygems.org'
-
-git_source(:github) do |repo_name|
-  repo_name = "\#{repo_name}/\#{repo_name}" unless repo_name.include?("/")
-  "https://github.com/\#{repo_name}.git"
-end
-
-source 'https://rubygems.org'
-gem 'rails', '~> 5.0.1'
-gem 'sqlite3'
-gem 'puma', '~> 3.0'
-gem 'sass-rails', '~> 5.0'
-gem 'uglifier', '>= 1.3.0'
-gem 'coffee-rails', '~> 4.2'
-gem 'jquery-rails'
-gem 'jbuilder', '~> 2.5'
-
-gem 'therubyracer', platforms: :ruby
-gem 'slim-rails'
-gem 'bootstrap-sass'
-gem 'simple_form'
-gem 'action_args'
-gem 'active_decorator'
-gem 'html5_validators'
-gem 'rails-flog'
-gem 'settingslogic'
-gem 'whenever', require: false
-gem 'newrelic_rpm'
-gem 'kaminari'
-gem 'nokogiri'
-gem 'unicorn'
-
-group :development, :test do
-  gem 'byebug', platform: :mri
-
-  gem 'annotate'
-  gem 'pry-rails'
-  gem 'pry-coolline'
-  gem 'pry-byebug'
-  gem 'rb-readline'
-  gem 'hirb'
-  gem 'hirb-unicode'
-  gem 'awesome_print'
-  gem 'rspec-rails'
-  gem 'spring-commands-rspec'
-  gem 'guard-rspec'
-  gem 'rb-fsevent'
-  gem 'factory_girl_rails'
-  gem 'database_rewinder'
-  gem 'timecop'
-end
-group :development do
-  gem 'web-console', '>= 3.3.0'
-  gem 'listen', '~> 3.0.5'
-  gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
-
-  gem 'html2slim'
-  gem 'bullet'
-  # gem 'rack-mini-profiler'
-  gem 'capistrano'
-  gem 'capistrano-rails'
-  gem 'capistrano-rbenv'
-  gem 'capistrano-bundler'
-  gem 'capistrano-rails-console'
-end
-group :test do
-  gem 'shoulda-matchers'
-end
-
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
-
-CODE
+get_remote('Gemfile')
 
 # Database
 if yes?('use PostgreSQL?(y/n)')
   gsub_file 'Gemfile', /^gem\s\'sqlite3\'/, 'gem \'pg\''
-  run 'rm -f config/database.yml'
-  file 'config/database.yml', <<-CODE
-default: &default
-  adapter: postgresql
-  encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-development:
-  <<: *default
-  database: #{@app_name}_development
-test:
-  <<: *default
-  database: #{@app_name}_test
-production:
-  <<: *default
-  database: #{@app_name}_production
-  username: #{@app_name}
-  password: <%= ENV['DATABASE_PASSWORD'] %>
-CODE
+  get_remote('config/database.yml.example', 'config/database.yml')
+  gsub_file "config/database.yml", /myapp/, @app_name
 end
 
 # install gems
@@ -179,73 +87,10 @@ gsub_file 'app/views/layouts/application.html.slim', /,\s\'data-turbolinks-track
 gsub_file 'app/assets/javascripts/application.js', /\/\/=\srequire\sturbolinks\n/, ''
 
 # Bootstrap
-run 'rm -f app/assets/stylesheets/application.css'
-file 'app/assets/stylesheets/application.scss', <<-CODE
-// First import cerulean variables
-@import "bootstrap-custom.scss";
-*{
-  // borderとpaddingをボックス内に含めるようにする
-  box-sizing: border-box;
-  // 長押しポップアップメニューの非表示
-  -webkit-touch-callout:none;
-}
-html, body{
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-body{
-}
-CODE
-file 'app/assets/stylesheets/bootstrap-custom.scss', <<-CODE
-@import "bootstrap-sprockets";
-// Core variables and mixins
-@import "bootstrap/variables";
-@import "bootstrap/mixins";
-// Reset and dependencies
-@import "bootstrap/normalize";
-@import "bootstrap/print";
-@import "bootstrap/glyphicons";
-// Core CSS
-@import "bootstrap/scaffolding";
-@import "bootstrap/type";
-@import "bootstrap/code";
-@import "bootstrap/grid";
-@import "bootstrap/tables";
-@import "bootstrap/forms";
-@import "bootstrap/buttons";
-// Components
-// @import "bootstrap/component-animations";
-// @import "bootstrap/dropdowns";
-@import "bootstrap/button-groups";
-@import "bootstrap/input-groups";
-@import "bootstrap/navs";
-@import "bootstrap/navbar";
-// @import "bootstrap/breadcrumbs";
-// @import "bootstrap/pagination";
-// @import "bootstrap/pager";
-// @import "bootstrap/labels";
-// @import "bootstrap/badges";
-// @import "bootstrap/jumbotron";
-// @import "bootstrap/thumbnails";
-// @import "bootstrap/alerts";
-// @import "bootstrap/progress-bars";
-// @import "bootstrap/media";
-// @import "bootstrap/list-group";
-// @import "bootstrap/panels";
-// @import "bootstrap/responsive-embed";
-// @import "bootstrap/wells";
-// @import "bootstrap/close";
-// Components w/ JavaScript
-// @import "bootstrap/modals";
-// @import "bootstrap/tooltip";
-// @import "bootstrap/popovers";
-// @import "bootstrap/carousel";
-// Utility classes
-// @import "bootstrap/utilities";
-// @import "bootstrap/responsive-utilities";
-CODE
+remove_file 'app/assets/stylesheets/application.css'
+get_remote('app/assets/stylesheets/application.scss')
+get_remote('app/assets/stylesheets/bootstrap-custom.scss')
+get_remote('app/assets/stylesheets/reset.scss')
 
 # Simple Form
 generate 'simple_form:install --bootstrap'
@@ -254,201 +99,32 @@ generate 'simple_form:install --bootstrap'
 run 'bundle exec wheneverize .'
 
 # Capistrano
-file 'Capfile', <<-CODE
-require 'capistrano/setup'
-require 'capistrano/deploy'
-require 'capistrano/rbenv'
-require 'capistrano/bundler'
-require 'capistrano/rails/assets'
-require 'capistrano/rails/migrations'
-require "whenever/capistrano"
-require 'capistrano/rails/console'
-Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
+get_remote('Capfile')
 
-require "capistrano/scm/git"
-install_plugin Capistrano::SCM::Git
-CODE
-
-file 'config/deploy.rb', <<-CODE
-set :repo_url, 'git@github.com:Iwark/#{@app_name}.git'
-set :rbenv_ruby, '2.4.0'
-# Default value for :linked_files is []
-set :linked_files, %w{config/database.yml config/secrets.yml}
-set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/uploads}
-set :default_stage, "production"
-set :whenever_identifier, ->{ "\#{fetch(:application)}_\#{fetch(:stage)}" }
-set :bundle_env_variables, { 'NOKOGIRI_USE_SYSTEM_LIBRARIES' => 1 }
-# set :linked_dirs, (fetch(:linked_dirs) + ['tmp/pids'])
-set :unicorn_rack_env, "production"
-set :unicorn_config_path, 'config/unicorn.rb'
-set :bundle_binstubs, nil
-
-namespace :deploy do
-  desc 'Restart application'
-  task :restart do
-    invoke 'unicorn:restart'
-  end
-  after :publishing, :restart
-  after :restart, :clear_cache do
-    on roles(:web), in: :groups, limit: 3, wait: 10 do
-      within release_path do
-        with rails_env: fetch(:rails_env) do
-          # execute :rake, 'cache:clear'
-        end
-      end
-    end
-  end
-end
-CODE
-
+# Deploy
+get_remote('config/deploy.rb.example', 'config/deploy.rb')
+gsub_file "config/deploy.rb", /my_repo/, @repo
 run 'mkdir config/deploy'
-file 'config/deploy/production.rb', <<-CODE
-role :app, %w{#{@app_name}}
-role :web, %w{#{@app_name}}
-role :db,  %w{#{@app_name}}
-set :stage, :production
-set :rails_env, :production
-set :deploy_to, '/home/ec2-user/#{@app_name}'
-set :default_env, {
-  rbenv_root: "/home/ec2-user/.rbenv",
-  path: "/home/ec2-user/.rbenv/shims:/home/ec2-user/.rbenv/bin:$PATH",
-}
-CODE
+get_remote('config/deploy/production.rb.example', 'config/deploy/production.rb')
+gsub_file "config/deploy/production.rb", /myapp/, @app_name
 
+# Unicorn
 run 'mkdir -p lib/capistrano/tasks'
-file 'lib/capistrano/tasks/unicorn.rake', <<-CODE
-namespace :unicorn do
-  task :environment do
-    set :unicorn_pid, "\#{shared_path}/tmp/pids/unicorn.pid"
-    set :unicorn_config, "\#{current_path}/config/unicorn.rb"
-  end
-
-  def start_unicorn
-    within current_path do
-      execute :bundle, :exec, "unicorn_rails -c \#{fetch(:unicorn_config)} -E \#{fetch(:rails_env)} -D"
-    end
-  end
-
-  def stop_unicorn
-    execute :kill, "-s QUIT $(< \#{fetch(:unicorn_pid)})"
-  end
-
-  def reload_unicorn
-    execute :kill, "-s USR2 $(< \#{fetch(:unicorn_pid)})"
-  end
-
-  def force_stop_unicorn
-    execute :kill, "$(< \#{fetch(:unicorn_pid)})"
-  end
-
-  desc "Start unicorn server"
-  task :start => :environment do
-    on roles(:app) do
-      start_unicorn
-    end
-  end
-
-  desc "Stop unicorn server gracefully"
-  task :stop => :environment do
-    on roles(:app) do
-      stop_unicorn
-    end
-  end
-
-  desc "Restart unicorn server gracefully"
-  task :restart => :environment do
-    on roles(:app) do
-      if test("[ -f \#{fetch(:unicorn_pid)} ]")
-        reload_unicorn
-      else
-        start_unicorn
-      end
-    end
-  end
-
-  desc "Stop unicorn server immediately"
-  task :force_stop => :environment do
-    on roles(:app) do
-      force_stop_unicorn
-    end
-  end
-end
-CODE
-
-# Setting Logic
-file 'config/application.yml', <<-CODE
-defaults: &defaults
-development:
-  <<: *defaults
-test:
-  <<: *defaults
-staging:
-  <<: *defaults
-production:
-  <<: *defaults
-CODE
-
-file 'config/initializers/0_settings.rb', <<-CODE
-class Settings < Settingslogic
-  source "\#{Rails.root}/config/application.yml"
-  namespace Rails.env
-end
-CODE
+get_remote('config/unicorn.rb')
+get_remote('lib/capistrano/tasks/unicorn.rake')
 
 # Kaminari config
 generate 'kaminari:config'
-
-# Unicorn
-file 'config/unicorn.rb', <<-CODE
-listen '/tmp/unicorn.sock', :backlog => 64
-pid "tmp/pids/unicorn.pid"
-stderr_path File.expand_path('unicorn.log', File.dirname(__FILE__) + '/../log')
-stdout_path File.expand_path('unicorn.log', File.dirname(__FILE__) + '/../log')
-worker_processes 4
-before_exec do |server|
-  ENV['BUNDLE_GEMFILE'] = File.expand_path('Gemfile', ENV['RAILS_ROOT'])
-end
-preload_app true
-before_fork do |server, worker|
-  defined?(ActiveRecord::Base) and ActiveRecord::Base.connection.disconnect!
-  old_pid = "\#{ server.config[:pid] }.oldbin"
-  if File.exists?(old_pid) && server.pid != old_pid
-    begin
-      sig = (worker.nr + 1) >= server.worker_processes ? :QUIT : :TTOU
-      Process.kill sig, File.read(old_pid).to_i
-    rescue Errno::ENOENT, Errno::ESRCH
-    end
-  end
-end
-CODE
 
 # Rspec
 generate 'rspec:install'
 run "echo '--color -f d' > .rspec"
 
 # Guard
-file 'Guardfile', <<-CODE
-guard :rspec, cmd: 'spring rspec' do
-  watch(%r{^spec/.+_spec\.rb$})
-  watch(%r{^lib/(.+)\.rb$})     { |m| "spec/lib/\#{m[1]}_spec.rb" }
-  watch('spec/spec_helper.rb')  { "spec" }
-  # Rails example
-  watch(%r{^app/(.+)\.rb$})                           { |m| "spec/\#{m[1]}_spec.rb" }
-  watch(%r{^app/(.*)(\.erb|\.haml|\.slim)$})          { |m| "spec/\#{m[1]}\#{m[2]}_spec.rb" }
-  watch(%r{^app/controllers/(.+)_(controller)\.rb$})  { |m| ["spec/routing/\#{m[1]}_routing_spec.rb", "spec/\#{m[2]}s/\#{m[1]}_\#{m[2]}_spec.rb", "spec/acceptance/\#{m[1]}_spec.rb"] }
-  watch(%r{^spec/support/(.+)\.rb$})                  { "spec" }
-  watch('config/routes.rb')                           { "spec/routing" }
-  watch('app/controllers/application_controller.rb')  { "spec/controllers" }
-  watch('spec/rails_helper.rb')                       { "spec" }
-  # Capybara features specs
-  watch(%r{^app/views/(.+)/.*\.(erb|haml|slim)$})     { |m| "spec/features/\#{m[1]}_spec.rb" }
-  # Turnip features and steps
-  watch(%r{^spec/acceptance/(.+)\.feature$})
-  watch(%r{^spec/acceptance/steps/(.+)_steps\.rb$})   { |m| Dir[File.join("**/\#{m[1]}.feature")][0] || 'spec/acceptance' }
-end
-CODE
+get_remote('Guardfile')
 
 # git
-# git :init
-# git add: '.'
-# git commit: "-a -m 'first commit'"
+git
+git :init
+git add: '.'
+git commit: "-a -m 'rails new #{@app_name} -m https://raw.githubusercontent.com/Iwark/rails5_template/master/app_template.rb'"
