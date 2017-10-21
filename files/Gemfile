@@ -26,6 +26,7 @@ gem 'newrelic_rpm'
 gem 'kaminari'
 gem 'nokogiri'
 gem 'unicorn'
+gem 'seed-fu', '~> 2.3'
 
 group :development, :test do
   gem 'byebug', platform: :mri
