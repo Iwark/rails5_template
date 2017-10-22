@@ -83,7 +83,8 @@ run 'gem install html2slim'
 run 'bundle exec erb2slim -d app/views'
 gsub_file 'app/views/layouts/application.html.slim', /,\s\'data-turbolinks-track\'\s=>\strue/, ''
 
-# turbolinksの削除
+# jqueryの追加とturbolinksの削除
+inject_into_file 'app/assets/javascripts/application.js', after: "//= require rails-ujs\n" do "//= require jquery\n" end
 gsub_file 'app/assets/javascripts/application.js', /\/\/=\srequire\sturbolinks\n/, ''
 
 # Bootstrap
