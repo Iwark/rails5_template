@@ -97,7 +97,7 @@ get_remote('app/assets/stylesheets/reset.scss')
 generate 'simple_form:install --bootstrap'
 
 # Whenever
-run 'bundle exec wheneverize .'
+get_remote('config/schedule.rb')
 
 # Capistrano
 get_remote('Capfile')
