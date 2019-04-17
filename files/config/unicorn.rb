@@ -1,4 +1,4 @@
-listen '/tmp/unicorn.sock', :backlog => 64
+listen '/var/sockets/unicorn.sock', :backlog => 64
 pid "tmp/pids/unicorn.pid"
 stderr_path File.expand_path('unicorn.log', File.dirname(__FILE__) + '/../log')
 stdout_path File.expand_path('unicorn.log', File.dirname(__FILE__) + '/../log')
