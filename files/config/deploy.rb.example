@@ -2,7 +2,7 @@ set :repo_url, 'git@github.com:my_repo.git'
 set :rbenv_ruby, '2.6.2'
 set :branch, ENV['BRANCH'] || "master"
 # Default value for :linked_files is []
-set :linked_files, %w{config/database.yml config/secrets.yml}
+set :linked_files, %w{config/database.yml config/master.key}
 set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/uploads}
 set :default_stage, "production"
 set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
